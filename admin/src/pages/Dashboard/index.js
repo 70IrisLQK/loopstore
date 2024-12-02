@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable array-callback-return */
 import DashboardBox from "./components/dashboardBox";
 import { FaUserCircle } from "react-icons/fa";
 import { IoMdCart } from "react-icons/io";

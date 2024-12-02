@@ -12,7 +12,6 @@ import Select from "@mui/material/Select";
 import {
   deleteData,
   deleteImages,
-  editData,
   fetchDataFromApi,
   postData,
   uploadImage,
@@ -135,7 +134,11 @@ const AddBanner = () => {
 
       formFields.images = selectedImages;
     } catch (error) {
-      console.log(error);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Something went wrong",
+      });
     }
 
     uploadImage(apiEndPoint, formdata).then((res) => {

@@ -182,7 +182,7 @@ const ProductDetails = () => {
           context.setAlertBox({
             open: true,
             error: false,
-            msg: "the product added in my list",
+            msg: "The product added in my list",
           });
 
           fetchDataFromApi(

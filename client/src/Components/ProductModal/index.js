@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Dialog from "@mui/material/Dialog";
 import { MdClose } from "react-icons/md";
 import Button from "@mui/material/Button";
@@ -87,7 +88,7 @@ const ProductModal = (props) => {
           context.setAlertBox({
             open: true,
             error: false,
-            msg: "the product added in my list",
+            msg: "The product added in my list",
           });
         } else {
           context.setAlertBox({
@@ -119,7 +120,7 @@ const ProductModal = (props) => {
         >
           <MdClose />
         </Button>
-        <h4 class="mb-1 font-weight-bold pr-5">{props?.data?.name}</h4>
+        <h4 className="mb-1 font-weight-bold pr-5">{props?.data?.name}</h4>
         <div className="d-flex align-items-center">
           <div className="d-flex align-items-center mr-4">
             <span>Brands:</span>

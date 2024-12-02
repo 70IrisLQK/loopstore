@@ -2,13 +2,11 @@ import React, { useContext } from "react";
 import { editData, fetchDataFromApi } from "../../utils/api";
 import { useState } from "react";
 import { useEffect } from "react";
-
 import { emphasize, styled } from "@mui/material/styles";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Chip from "@mui/material/Chip";
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Pagination from "@mui/material/Pagination";
 import Dialog from "@mui/material/Dialog";
 import { MdClose } from "react-icons/md";
 import Button from "@mui/material/Button";
@@ -16,12 +14,9 @@ import { MdOutlineEmail } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
 import { MdOutlineCurrencyRupee } from "react-icons/md";
 import { MdOutlineDateRange } from "react-icons/md";
-
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { MyContext } from "../../App";
-
-const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -46,12 +41,11 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
-  const [page, setPage] = useState(1);
-  const [products, setproducts] = useState([]);
+  const [products, setProducts] = useState([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  const [singleOrder, setSingleOrder] = useState();
-  const [statusVal, setstatusVal] = useState(null);
+  const [, setSingleOrder] = useState();
+  const [statusVal, setStatusVal] = useState(null);
 
   const context = useContext(MyContext);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,12 +61,12 @@ const Orders = () => {
   const showProducts = (id) => {
     fetchDataFromApi(`/api/orders/${id}`).then((res) => {
       setIsOpenModal(true);
-      setproducts(res.products);
+      setProducts(res.products);
     });
   };
 
   const handleChangeStatus = (e, orderId) => {
-    setstatusVal(e.target.value);
+    setStatusVal(e.target.value);
     setIsLoading(true);
     context.setProgress(40);
     fetchDataFromApi(`/api/orders/${orderId}`).then((res) => {
@@ -137,7 +131,7 @@ const Orders = () => {
               <thead className="thead-dark">
                 <tr>
                   <th>Order Id</th>
-                  <th>Paymant Id</th>
+                  <th>Payment Id</th>
                   <th>Products</th>
                   <th>Name</th>
                   <th>Phone Number</th>
@@ -158,18 +152,18 @@ const Orders = () => {
                       <>
                         <tr key={index}>
                           <td>
-                            <span className="text-blue fonmt-weight-bold">
+                            <span className="text-blue font-weight-bold">
                               {order?._id}
                             </span>
                           </td>
                           <td>
-                            <span className="text-blue fonmt-weight-bold">
+                            <span className="text-blue font-weight-bold">
                               {order?.paymentId}
                             </span>
                           </td>
                           <td>
                             <span
-                              className="text-blue fonmt-weight-bold cursor"
+                              className="text-blue font-weight-bold cursor"
                               onClick={() => showProducts(order?._id)}
                             >
                               Click here to view
@@ -232,7 +226,7 @@ const Orders = () => {
         <Button className="close_" onClick={() => setIsOpenModal(false)}>
           <MdClose />
         </Button>
-        <h4 class="mb-1 font-weight-bold pr-5 mb-4">Products</h4>
+        <h4 className="mb-1 font-weight-bold pr-5 mb-4">Products</h4>
 
         <div className="table-responsive orderTable">
           <table className="table table-striped table-bordered">
@@ -251,14 +245,14 @@ const Orders = () => {
               {products?.length !== 0 &&
                 products?.map((item, index) => {
                   return (
-                    <tr>
+                    <tr key={index}>
                       <td>{item?.productId}</td>
                       <td style={{ whiteSpace: "inherit" }}>
                         <span>{item?.productTitle?.substr(0, 30) + "..."}</span>
                       </td>
                       <td>
                         <div className="img">
-                          <img src={item?.image} />
+                          <img src={item?.image} alt={index} />
                         </div>
                       </td>
                       <td>{item?.quantity}</td>

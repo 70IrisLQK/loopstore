@@ -17,10 +17,11 @@ import Checkout from "./Pages/Checkout";
 import Orders from "./Pages/Orders";
 import MyAccount from "./Pages/MyAccount";
 import SearchPage from "./Pages/Search";
-
 import { fetchDataFromApi, postData } from "./utils/api";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import VerifyOTP from "./Pages/VerifyOTP";
+import ChangePassword from "./Pages/ChangePassword";
 
 const MyContext = createContext();
 
@@ -74,7 +75,7 @@ function App() {
       const subCatArr = [];
 
       res.categoryList?.length !== 0 &&
-        res.categoryList?.map((cat, index) => {
+        res.categoryList?.map((cat) => {
           if (cat?.children.length !== 0) {
             cat?.children?.map((subCat) => {
               subCatArr.push(subCat);
@@ -245,6 +246,12 @@ function App() {
           <Route exact={true} path="/cart" element={<Cart />} />
           <Route exact={true} path="/signIn" element={<SignIn />} />
           <Route exact={true} path="/signUp" element={<SignUp />} />
+          <Route exact={true} path="/verifyOTP" element={<VerifyOTP />} />
+          <Route
+            exact={true}
+            path="/changePassword"
+            element={<ChangePassword />}
+          />
           <Route exact={true} path="/my-list" element={<MyList />} />
           <Route exact={true} path="/checkout" element={<Checkout />} />
           <Route exact={true} path="/orders" element={<Orders />} />

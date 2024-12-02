@@ -1,25 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import Button from "@mui/material/Button";
-
 import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import Pagination from "@mui/material/Pagination";
 import { MyContext } from "../../App";
-
 import { Link } from "react-router-dom";
-
 import { emphasize, styled } from "@mui/material/styles";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Chip from "@mui/material/Chip";
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-
-import { deleteData, editData, fetchDataFromApi } from "../../utils/api";
-
-const label = { inputProps: { "aria-label": "Checkbox demo" } };
+import { deleteData, fetchDataFromApi } from "../../utils/api";
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -58,18 +50,18 @@ const HomeSlidesList = () => {
 
   const deleteSlide = (id) => {
     context.setProgress(30);
-      deleteData(`/api/homeBanner/${id}`).then((res) => {
+    deleteData(`/api/homeBanner/${id}`).then((res) => {
+      context.setProgress(100);
+      fetchDataFromApi("/api/homeBanner").then((res) => {
+        setSlideList(res);
         context.setProgress(100);
-        fetchDataFromApi("/api/homeBanner").then((res) => {
-          setSlideList(res);
-          context.setProgress(100);
-          context.setProgress({
-            open: true,
-            error: false,
-            msg: "Slide Deleted!",
-          });
+        context.setProgress({
+          open: true,
+          error: false,
+          msg: "Slide Deleted!",
         });
       });
+    });
   };
 
   return (

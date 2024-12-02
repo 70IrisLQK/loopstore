@@ -11,6 +11,12 @@ const {
   deleteUser,
   getUserCount,
   deleteImage,
+  signInWithGoogle,
+  resendOtp,
+  verifyEmail,
+  forgotPassword,
+  resetPassword,
+  updateUser,
 } = require("../controllers/userController");
 
 const storage = multer.diskStorage({
@@ -30,8 +36,14 @@ router.post("/signin", signIn);
 router.put("/changePassword/:id", changePassword);
 router.get("/", getUserList);
 router.get("/:id", getUserById);
+router.put("/:id", updateUser);
 router.delete("/:id", deleteUser);
 router.get("/get/count", getUserCount);
 router.delete("/deleteImage", deleteImage);
+router.post("/authWithGoogle", signInWithGoogle);
+router.post("/verifyAccount/resendOtp", resendOtp);
+router.post("/verifyEmail", verifyEmail);
+router.post("/forgotPassword", forgotPassword);
+router.post("/resetPassword", resetPassword);
 
 module.exports = router;

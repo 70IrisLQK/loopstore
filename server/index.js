@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
-require("dotenv/config");
+require("dotenv").config();
 const userRoutes = require("./routes/userRoute.js");
 const categoryRoutes = require("./routes/categoryRoute.js");
 const productRoutes = require("./routes/productRoute.js");
@@ -31,10 +31,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 //middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 //Routes
 app.use("/api/user", userRoutes);
 app.use("/uploads", express.static("uploads"));

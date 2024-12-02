@@ -62,7 +62,7 @@ const Navigation = (props) => {
                 <ul>
                   {props.navData?.map((item, index) => {
                     return (
-                      <li>
+                      <li key={index}>
                         <Link
                           to={`/products/category/${item?._id}`}
                           key={index}
@@ -120,7 +120,7 @@ const Navigation = (props) => {
                   .filter((item, idx) => idx < 7)
                   .map((item, index) => {
                     return (
-                      <li className="list-inline-item">
+                      <li className="list-inline-item" key={index}>
                         <Link
                           to={`/products/category/${item?._id}`}
                           onClick={props.closeNav}

@@ -14,7 +14,6 @@ import {
   deleteImages,
   editData,
   fetchDataFromApi,
-  postData,
   uploadImage,
 } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
@@ -77,7 +76,9 @@ const EditBanner = () => {
   useEffect(() => {
     context.setProgress(20);
     fetchDataFromApi("/api/imageUpload").then((res) => {
+      // eslint-disable-next-line array-callback-return
       res?.map((item) => {
+        // eslint-disable-next-line array-callback-return
         item?.images?.map((img) => {
           deleteImages(`/api/banners/deleteImage?img=${img}`).then((res) => {
             deleteData("/api/imageUpload/deleteAllImages");
@@ -87,8 +88,6 @@ const EditBanner = () => {
     });
 
     fetchDataFromApi(`/api/homeSideBanners/${id}`).then((res) => {
-      // setcategory(res);
-
       setPreviews(res.images);
       setCategoryVal(res?.catId);
       setSubCatVal(res?.subCatId);
@@ -96,14 +95,17 @@ const EditBanner = () => {
       formFields.subCatId = res?.subCatId;
       context.setProgress(100);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   useEffect(() => {
     const subCatArr = [];
 
     context.catData?.categoryList?.length !== 0 &&
-      context.catData?.categoryList?.map((cat, index) => {
+      // eslint-disable-next-line array-callback-return
+      context.catData?.categoryList?.map((cat) => {
         if (cat?.children.length !== 0) {
+          // eslint-disable-next-line array-callback-return
           cat?.children?.map((subCat) => {
             subCatArr.push(subCat);
           });
@@ -144,7 +146,11 @@ const EditBanner = () => {
         }
       }
     } catch (error) {
-      console.log(error);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Something went wrong",
+      });
     }
 
     uploadImage(apiEndPoint, formdata).then((res) => {
@@ -156,8 +162,10 @@ const EditBanner = () => {
           response.length !== 0
         ) {
           response.length !== 0 &&
+            // eslint-disable-next-line array-callback-return
             response.map((item) => {
               item?.images.length !== 0 &&
+                // eslint-disable-next-line array-callback-return
                 item?.images?.map((img) => {
                   img_arr.push(img);
                 });
@@ -166,10 +174,6 @@ const EditBanner = () => {
           uniqueArray = img_arr.filter(
             (item, index) => img_arr.indexOf(item) === index
           );
-
-          // const appendedArray = [...previews, ...uniqueArray];
-
-          //
 
           setPreviews(uniqueArray);
           setTimeout(() => {

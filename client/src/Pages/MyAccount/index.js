@@ -10,15 +10,12 @@ import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import {
   deleteData,
-  deleteImages,
   editData,
   fetchDataFromApi,
-  postData,
   uploadImage,
 } from "../../utils/api";
 
 import { MyContext } from "../../App";
-
 import NoUserImg from "../../assets/images/no-user.jpg";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -56,7 +53,7 @@ function a11yProps(index) {
 }
 
 const MyAccount = () => {
-  const [isLogin, setIsLogin] = useState(false);
+  const [, setIsLogin] = useState(false);
 
   const [value, setValue] = React.useState(0);
 
@@ -72,7 +69,7 @@ const MyAccount = () => {
   const [uploading, setUploading] = useState(false);
 
   const [previews, setPreviews] = useState([]);
-  const [userData, setUserData] = useState([]);
+  const [, setUserData] = useState([]);
 
   const formdata = new FormData();
 
@@ -170,7 +167,11 @@ const MyAccount = () => {
       formFields.images = selectedImages;
       selectedImages.push(selectedImages);
     } catch (error) {
-      console.log(error);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Something went wrong",
+      });
     }
 
     uploadImage(apiEndPoint, formdata).then((res) => {
@@ -194,8 +195,6 @@ const MyAccount = () => {
           );
 
           setPreviews([]);
-
-          const appendedArray = [...previews, ...uniqueArray];
 
           setPreviews(uniqueArray);
 
@@ -228,7 +227,7 @@ const MyAccount = () => {
     });
   };
 
-  const edituser = (e) => {
+  const editUser = (e) => {
     e.preventDefault();
 
     const appendedArray = [...previews, ...uniqueArray];
@@ -259,7 +258,7 @@ const MyAccount = () => {
         context.setAlertBox({
           open: true,
           error: false,
-          msg: "user updated",
+          msg: "User updated",
         });
       });
     } else {
@@ -300,7 +299,21 @@ const MyAccount = () => {
         };
 
         editData(`/api/user/changePassword/${user.userId}`, data).then(
-          (res) => {}
+          (res) => {
+            if (res?.error === true) {
+              context.setAlertBox({
+                open: true,
+                error: true,
+                msg: res.msg,
+              });
+            } else {
+              context.setAlertBox({
+                open: true,
+                error: false,
+                msg: "User updated",
+              });
+            }
+          }
         );
       }
     } else {
@@ -330,7 +343,7 @@ const MyAccount = () => {
             </Tabs>
           </Box>
           <CustomTabPanel value={value} index={0}>
-            <form onSubmit={edituser}>
+            <form onSubmit={editUser}>
               <div className="row">
                 <div className="col-md-4">
                   <div className="userImage d-flex align-items-center justify-content-center">
@@ -340,10 +353,10 @@ const MyAccount = () => {
                       <>
                         {previews?.length !== 0 ? (
                           previews?.map((img, index) => {
-                            return <img src={img} key={index} />;
+                            return <img src={img} key={index} alt={index} />;
                           })
                         ) : (
-                          <img src={NoUserImg} />
+                          <img src={NoUserImg} alt="user-img" />
                         )}
                         <div className="overlay d-flex align-items-center justify-content-center">
                           <IoMdCloudUpload />
@@ -424,6 +437,7 @@ const MyAccount = () => {
                     <div className="col-md-4">
                       <div className="form-group">
                         <TextField
+                          type="password"
                           label="Old Password"
                           variant="outlined"
                           className="w-100"
@@ -436,6 +450,7 @@ const MyAccount = () => {
                     <div className="col-md-4">
                       <div className="form-group">
                         <TextField
+                          type="password"
                           label="New password"
                           variant="outlined"
                           className="w-100"
@@ -448,6 +463,7 @@ const MyAccount = () => {
                     <div className="col-md-4">
                       <div className="form-group">
                         <TextField
+                          type="password"
                           label="Confirm Password"
                           variant="outlined"
                           className="w-100"

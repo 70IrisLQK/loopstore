@@ -1,16 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import Logo from "../../assets/images/logo.png";
 import { MyContext } from "../../App";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
-
 import GoogleImg from "../../assets/images/googleImg.png";
 import { postData } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
-
-import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { firebaseApp } from "../../firebase";
 
@@ -87,16 +85,11 @@ const SignUp = () => {
       postData("/api/user/signup", formfields)
         .then((res) => {
           if (res.status !== "FAILED") {
-            context.setAlertBox({
-              open: true,
-              error: false,
-              msg: res?.msg,
-            });
+            localStorage.setItem("userEmail", formfields.email);
 
             setTimeout(() => {
               setIsLoading(true);
-              history("/signIn");
-              //window.location.href="/signIn";
+              history("/verifyOTP");
             }, 2000);
           } else {
             setIsLoading(false);
@@ -113,15 +106,17 @@ const SignUp = () => {
           // Handle error (e.g., show an error message)
         });
     } catch (error) {
-      console.log(error);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Something went wrong",
+      });
     }
   };
 
   const signInWithGoogle = () => {
     signInWithPopup(auth, googleProvider)
       .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
         // The signed-in user info.
         const user = result.user;
 
@@ -145,7 +140,7 @@ const SignUp = () => {
               };
 
               localStorage.setItem("user", JSON.stringify(user));
-
+              context.setUser(JSON.stringify(user));
               context.setAlertBox({
                 open: true,
                 error: false,
@@ -167,7 +162,11 @@ const SignUp = () => {
               setIsLoading(false);
             }
           } catch (error) {
-            console.log(error);
+            context.setAlertBox({
+              open: true,
+              error: true,
+              msg: "Something went wrong",
+            });
             setIsLoading(false);
           }
         });
@@ -178,16 +177,13 @@ const SignUp = () => {
           msg: "User authentication successfully!",
         });
 
-        // window.location.href = "/";
+        window.location.href = "/";
       })
       .catch((error) => {
         // Handle Errors here.
-        const errorCode = error.code;
         const errorMessage = error.message;
         // The email of the user's account used.
-        const email = error.customData.email;
         // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
         context.setAlertBox({
           open: true,
           error: true,
@@ -211,7 +207,7 @@ const SignUp = () => {
         >
           {" "}
           <path
-            class="st0"
+            className="st0"
             d="M1921,413.1v406.7H0V0.5h0.4l228.1,598.3c30,74.4,80.8,130.6,152.5,168.6c107.6,57,212.1,40.7,245.7,34.4 c22.4-4.2,54.9-13.1,97.5-26.6L1921,400.5V413.1z"
           ></path>{" "}
         </svg>
@@ -220,7 +216,7 @@ const SignUp = () => {
       <div className="container">
         <div className="box card p-3 shadow border-0">
           <div className="text-center">
-            <img className="w-50" src={Logo} />
+            <img className="w-50" src={Logo} alt="logo" />
           </div>
 
           <form className="mt-2" onSubmit={register}>
@@ -319,7 +315,7 @@ const SignUp = () => {
               variant="outlined"
               onClick={signInWithGoogle}
             >
-              <img src={GoogleImg} /> Sign In with Google
+              <img src={GoogleImg} alt="google-img" /> Sign In with Google
             </Button>
           </form>
         </div>

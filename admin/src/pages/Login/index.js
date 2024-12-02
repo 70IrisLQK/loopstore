@@ -8,13 +8,10 @@ import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
-
 import googleIcon from "../../assets/images/googleIcon.png";
 import { useNavigate } from "react-router-dom";
 import { postData } from "../../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
-
-import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { firebaseApp } from "../../firebase";
 
@@ -46,6 +43,7 @@ const Login = () => {
     } else {
       history("/login");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const focusInput = (index) => {
@@ -126,7 +124,6 @@ const Login = () => {
           setIsLoading(false);
         }
       } catch (error) {
-        console.log(error);
         setIsLoading(false);
       }
     });
@@ -135,8 +132,6 @@ const Login = () => {
   const signInWithGoogle = () => {
     signInWithPopup(auth, googleProvider)
       .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
         // The signed-in user info.
         const user = result.user;
 
@@ -161,7 +156,7 @@ const Login = () => {
               };
 
               localStorage.setItem("user", JSON.stringify(user));
-
+              context.setUser(JSON.stringify(user));
               context.setAlertBox({
                 open: true,
                 error: false,
@@ -181,7 +176,11 @@ const Login = () => {
               setIsLoading(false);
             }
           } catch (error) {
-            console.log(error);
+            context.setAlertBox({
+              open: true,
+              error: true,
+              msg: "Something went wrong",
+            });
             setIsLoading(false);
           }
         });
@@ -192,16 +191,13 @@ const Login = () => {
           msg: "User authentication successfully!",
         });
 
-        // window.location.href = "/";
+        window.location.href = "/";
       })
       .catch((error) => {
         // Handle Errors here.
-        const errorCode = error.code;
         const errorMessage = error.message;
         // The email of the user's account used.
-        const email = error.customData.email;
         // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
         context.setAlertBox({
           open: true,
           error: true,
@@ -218,7 +214,7 @@ const Login = () => {
         <div className="loginBox">
           <Link to={"/"} className="d-flex align-items-center flex-column logo">
             <img src={Logo} alt="logo" />
-            <span className="ml-2">ECOMMERCE</span>
+            <span className="ml-2">Online Shopping</span>
           </Link>
           <div className="wrapper mt-3 card border">
             <form onSubmit={signIn}>
@@ -286,8 +282,8 @@ const Login = () => {
                   className="w-100 btn-lg btn-big loginWithGoogle"
                   onClick={signInWithGoogle}
                 >
-                  <img src={googleIcon} width="25px" /> &nbsp; Sign In with
-                  Google
+                  <img src={googleIcon} width="25px" alt="google-icon" /> &nbsp;
+                  Sign In with Google
                 </Button>
               </div>
             </form>

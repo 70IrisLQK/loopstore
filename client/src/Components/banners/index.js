@@ -9,7 +9,6 @@ import { Link } from "react-router-dom";
 
 const Banners = (props) => {
   const context = useContext(MyContext);
-  console.log(props);
   return (
     <>
       <div className="bannerAds pt-3 pb-3">

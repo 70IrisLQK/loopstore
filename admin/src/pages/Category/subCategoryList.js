@@ -1,20 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import Button from "@mui/material/Button";
-
 import { MyContext } from "../../App";
-
 import { Link } from "react-router-dom";
-
 import { emphasize, styled } from "@mui/material/styles";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Chip from "@mui/material/Chip";
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { IoCloseSharp } from "react-icons/io5";
-
 import { deleteData, fetchDataFromApi } from "../../utils/api";
 
 //breadcrumb code
@@ -113,6 +109,7 @@ const SubCategory = () => {
 
               <tbody>
                 {catData?.categoryList?.length !== 0 &&
+                  // eslint-disable-next-line array-callback-return
                   catData?.categoryList?.map((item, index) => {
                     if (item?.children?.length !== 0) {
                       return (

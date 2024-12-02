@@ -10,10 +10,8 @@ import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import {
   deleteData,
-  deleteImages,
   editData,
   fetchDataFromApi,
-  postData,
   uploadImage,
 } from "../../utils/api";
 
@@ -56,7 +54,7 @@ function a11yProps(index) {
 }
 
 const MyAccount = () => {
-  const [isLogin, setIsLogin] = useState(false);
+  const [, setIsLogin] = useState(false);
 
   const [value, setValue] = React.useState(0);
 
@@ -72,7 +70,7 @@ const MyAccount = () => {
   const [uploading, setUploading] = useState(false);
 
   const [previews, setPreviews] = useState([]);
-  const [userData, setUserData] = useState([]);
+  const [, setUserData] = useState([]);
 
   const formdata = new FormData();
 
@@ -165,7 +163,11 @@ const MyAccount = () => {
 
       formFields.images = selectedImages;
     } catch (error) {
-      console.log(error);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Something went wrong",
+      });
     }
 
     uploadImage(apiEndPoint, formdata).then((res) => {
@@ -188,8 +190,6 @@ const MyAccount = () => {
             (item, index) => img_arr.indexOf(item) === index
           );
 
-          const appendedArray = [...previews, ...uniqueArray];
-
           setPreviews(uniqueArray);
           setTimeout(() => {
             setUploading(false);
@@ -205,7 +205,7 @@ const MyAccount = () => {
     });
   };
 
-  const edituser = (e) => {
+  const editUser = (e) => {
     e.preventDefault();
 
     const appendedArray = [...previews, ...uniqueArray];
@@ -228,17 +228,19 @@ const MyAccount = () => {
       setIsLoading(true);
       const user = JSON.parse(localStorage.getItem("user"));
 
-      editData(`/api/user/${user?.userId}`, formFields).then((res) => {
-        setIsLoading(false);
+      editData(`/api/user/changePassword/${user?.userId}`, formFields).then(
+        (res) => {
+          setIsLoading(false);
 
-        deleteData("/api/imageUpload/deleteAllImages");
+          deleteData("/api/imageUpload/deleteAllImages");
 
-        context.setAlertBox({
-          open: true,
-          error: false,
-          msg: "user updated",
-        });
-      });
+          context.setAlertBox({
+            open: true,
+            error: false,
+            msg: "User updated",
+          });
+        }
+      );
     } else {
       context.setAlertBox({
         open: true,
@@ -308,7 +310,7 @@ const MyAccount = () => {
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-          <form onSubmit={edituser}>
+          <form onSubmit={editUser}>
             <div className="row">
               <div className="col-md-4">
                 <div className="userImage d-flex align-items-center justify-content-center">
@@ -318,10 +320,10 @@ const MyAccount = () => {
                     <>
                       {previews?.length !== 0 ? (
                         previews?.map((img, index) => {
-                          return <img src={img} key={index} />;
+                          return <img src={img} key={index} alt={index} />;
                         })
                       ) : (
-                        <img src={NoUserImg} />
+                        <img src={NoUserImg} alt="user-img" />
                       )}
                       <div className="overlay d-flex align-items-center justify-content-center">
                         <IoMdCloudUpload />

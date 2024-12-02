@@ -47,6 +47,7 @@ const SignUp = () => {
   useEffect(() => {
     context.setIsHideSidebarAndHeader(true);
     window.scrollTo(0, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const focusInput = (index) => {
@@ -143,19 +144,25 @@ const SignUp = () => {
         })
         .catch((error) => {
           setIsLoading(false);
-          console.error("Error posting data:", error);
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: "Something went wrong",
+          });
           // Handle error (e.g., show an error message)
         });
     } catch (error) {
-      console.log(error);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Something went wrong",
+      });
     }
   };
 
   const signInWithGoogle = () => {
     signInWithPopup(auth, googleProvider)
       .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
         // The signed-in user info.
         const user = result.user;
 
@@ -180,7 +187,7 @@ const SignUp = () => {
               };
 
               localStorage.setItem("user", JSON.stringify(user));
-
+              context.setUser(JSON.stringify(user));
               context.setAlertBox({
                 open: true,
                 error: false,
@@ -200,7 +207,11 @@ const SignUp = () => {
               setIsLoading(false);
             }
           } catch (error) {
-            console.log(error);
+            context.setAlertBox({
+              open: true,
+              error: true,
+              msg: "Something went wrong",
+            });
             setIsLoading(false);
           }
         });
@@ -211,16 +222,13 @@ const SignUp = () => {
           msg: "User authentication successfully!",
         });
 
-        // window.location.href = "/";
+        window.location.href = "/";
       })
       .catch((error) => {
         // Handle Errors here.
-        const errorCode = error.code;
         const errorMessage = error.message;
         // The email of the user's account used.
-        const email = error.customData.email;
         // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
         context.setAlertBox({
           open: true,
           error: true,
@@ -238,8 +246,8 @@ const SignUp = () => {
           <div className="col-md-8 d-flex align-items-center flex-column part1 justify-content-center">
             <h1>
               BEST UX/UI FASHION{" "}
-              <span className="text-sky">ECOMMERCE DASHBOARD</span> & ADMIN
-              PANEL
+              <span className="text-sky">Online Shopping DASHBOARD</span> &
+              ADMIN PANEL
             </h1>
             <div className="w-100 mt-4">
               <Link to={"/"}>
@@ -258,7 +266,7 @@ const SignUp = () => {
                 className="d-flex align-items-center flex-column logo"
               >
                 <img src={Logo} alt="logo" />
-                <span className="ml-2">ECOMMERCE</span>
+                <span className="ml-2">Online Shopping</span>
               </Link>
 
               <div className="wrapper mt-3 card border">
@@ -402,8 +410,8 @@ const SignUp = () => {
                       className="w-100 btn-lg btn-big loginWithGoogle"
                       onClick={signInWithGoogle}
                     >
-                      <img src={googleIcon} width="25px" /> &nbsp; Sign In with
-                      Google
+                      <img src={googleIcon} width="25px" alt="google-icon" />{" "}
+                      &nbsp; Sign In with Google
                     </Button>
                   </div>
                 </form>

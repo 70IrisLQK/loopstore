@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import RangeSlider from "react-range-slider-input";
@@ -73,7 +74,7 @@ const Sidebar = (props) => {
         )}
 
         <div className="filterBox">
-          <h6>PRODUCT CATEGORIES</h6>
+          <h6>SUB PRODUCT CATEGORIES</h6>
 
           <div className="scroll">
             <RadioGroup
@@ -89,6 +90,7 @@ const Sidebar = (props) => {
                       value={item?.id}
                       control={<Radio />}
                       label={item?.name}
+                      key={index}
                     />
                   );
                 })}

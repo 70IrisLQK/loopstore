@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React from "react";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import HomeIcon from "@mui/icons-material/Home";
@@ -10,7 +11,6 @@ import Button from "@mui/material/Button";
 import {
   deleteData,
   deleteImages,
-  editData,
   fetchDataFromApi,
   postData,
   uploadImage,
@@ -18,10 +18,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { FaRegImages } from "react-icons/fa";
 import { MyContext } from "../../App";
-
 import CircularProgress from "@mui/material/CircularProgress";
 import { IoCloseSharp } from "react-icons/io5";
-
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 
@@ -49,7 +47,7 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 const AddHomeSlide = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [formFields, setFormFields] = useState({
+  const [formFields] = useState({
     images: [],
   });
 
@@ -108,7 +106,11 @@ const AddHomeSlide = () => {
 
       formFields.images = selectedImages;
     } catch (error) {
-      console.log(error);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Something went wrong",
+      });
     }
 
     uploadImage(apiEndPoint, formdata).then((res) => {
@@ -228,7 +230,7 @@ const AddHomeSlide = () => {
             <div className="col-sm-9">
               <div className="card p-4 mt-0">
                 <div className="imagesUploadSec">
-                  <h5 class="mb-4">Media And Published</h5>
+                  <h5 className="mb-4">Media And Published</h5>
 
                   <div className="imgUploadBox d-flex align-items-center">
                     {previews?.length !== 0 &&

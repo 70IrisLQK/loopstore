@@ -10,7 +10,6 @@ import Button from "@mui/material/Button";
 import {
   deleteData,
   deleteImages,
-  editData,
   fetchDataFromApi,
   postData,
   uploadImage,
@@ -66,7 +65,9 @@ const AddCategory = () => {
 
   useEffect(() => {
     fetchDataFromApi("/api/imageUpload").then((res) => {
+      // eslint-disable-next-line array-callback-return
       res?.map((item) => {
+        // eslint-disable-next-line array-callback-return
         item?.images?.map((img) => {
           deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
             deleteData("/api/imageUpload/deleteAllImages");
@@ -118,7 +119,11 @@ const AddCategory = () => {
 
       formFields.images = selectedImages;
     } catch (error) {
-      console.log(error);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Something went wrong",
+      });
     }
 
     uploadImage(apiEndPoint, formdata).then((res) => {
@@ -130,8 +135,10 @@ const AddCategory = () => {
           response.length !== 0
         ) {
           response.length !== 0 &&
+            // eslint-disable-next-line array-callback-return
             response.map((item) => {
               item?.images.length !== 0 &&
+                // eslint-disable-next-line array-callback-return
                 item?.images?.map((img) => {
                   img_arr.push(img);
                 });
@@ -244,7 +251,7 @@ const AddCategory = () => {
                 </div>
 
                 <div className="imagesUploadSec">
-                  <h5 class="mb-4">Media And Published</h5>
+                  <h5 className="mb-4">Media And Published</h5>
 
                   <div className="imgUploadBox d-flex align-items-center">
                     {previews?.length !== 0 &&

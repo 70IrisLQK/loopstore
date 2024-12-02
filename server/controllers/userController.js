@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
+const { randomCode } = require("../helper/main");
+const { sendOTPEmail } = require("../helper/send-mail");
 
 // Cloudinary configuration
 cloudinary.config({
@@ -12,10 +14,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
   secure: true,
 });
-
+var imagesArr = [];
 // Controller logic
 const uploadImages = async (req, res) => {
-  const imagesArr = [];
+  imagesArr = [];
 
   try {
     for (let i = 0; i < req.files.length; i++) {
@@ -38,7 +40,6 @@ const uploadImages = async (req, res) => {
 
     return res.status(200).json(imagesArr);
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ error: "Error uploading images" });
   }
 };
@@ -47,9 +48,12 @@ const signUp = async (req, res) => {
   const { name, phone, email, password, isAdmin } = req.body;
 
   try {
-    const existingUser = await User.findOne({ email });
-    const existingUserByPhone = await User.findOne({ phone });
+    // Generate verify code
+    const verifyCode = await randomCode();
+    let user;
 
+    const existingUser = await User.findOne({ email: email });
+    const existingUserByPhone = await User.findOne({ phone });
     if (existingUser) {
       return res.json({
         status: "FAILED",
@@ -64,26 +68,41 @@ const signUp = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashPassword = await bcrypt.hash(password, 10);
 
-    const result = await User.create({
-      name,
-      phone,
-      email,
-      password: hashedPassword,
-      isAdmin,
-    });
+    if (existingUser) {
+      existingUser.password = hashPassword;
+      existingUser.otp = verifyCode;
+      existingUser.otpExpired = Date.now() + 600000; // 10 minutes
+      await existingUser.save();
+      user = existingUser;
+    } else {
+      user = new User({
+        name,
+        email,
+        phone,
+        password: hashPassword,
+        isAdmin,
+        otp: verifyCode,
+        otpExpired: Date.now() + 600000, // 10 minutes
+      });
+
+      await user.save();
+    }
+
+    await sendOTPEmail(email, verifyCode);
 
     const token = jwt.sign(
-      { email: result.email, id: result._id },
-      process.env.JSON_WEB_TOKEN_SECRET_KEY
+      { email: user.email, id: user._id },
+      process.env.TOKEN_SECRET_KEY
     );
 
-    return res
-      .status(200)
-      .json({ user: result, token, msg: "User registered successfully" });
+    return res.status(200).json({
+      success: true,
+      token,
+      msg: "User registered successfully! Please verify your email",
+    });
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .json({ status: "FAILED", msg: "Something went wrong" });
@@ -94,11 +113,17 @@ const signIn = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: email });
     if (!existingUser) {
       return res.status(404).json({ error: true, msg: "User not found!" });
     }
-
+    if (existingUser.isVerified === false) {
+      return res.status(400).json({
+        error: true,
+        isVerify: false,
+        msg: "Your account is not active yet. Please active your account!",
+      });
+    }
     const matchPassword = await bcrypt.compare(password, existingUser.password);
     if (!matchPassword) {
       return res.status(400).json({ error: true, msg: "Invalid credentials" });
@@ -106,16 +131,14 @@ const signIn = async (req, res) => {
 
     const token = jwt.sign(
       { email: existingUser.email, id: existingUser._id },
-      process.env.JSON_WEB_TOKEN_SECRET_KEY
+      process.env.TOKEN_SECRET_KEY
     );
 
-    return res
-      .status(200)
-      .json({
-        user: existingUser,
-        token,
-        msg: "User authenticated successfully",
-      });
+    return res.status(200).json({
+      user: existingUser,
+      token,
+      msg: "User authenticated successfully",
+    });
   } catch (error) {
     return res.status(500).json({ error: true, msg: "Something went wrong" });
   }
@@ -124,38 +147,42 @@ const signIn = async (req, res) => {
 const changePassword = async (req, res) => {
   const { name, phone, email, password, newPass, images } = req.body;
 
-  try {
-    const existingUser = await User.findOne({ email });
-    if (!existingUser) {
-      return res.status(404).json({ error: true, msg: "User not found!" });
-    }
+  const existingUser = await User.findOne({ email: email });
+  if (!existingUser) {
+    res.status(404).json({ error: true, msg: "User not found!" });
+  }
 
-    const matchPassword = await bcrypt.compare(password, existingUser.password);
-    if (!matchPassword) {
-      return res
-        .status(404)
-        .json({ error: true, msg: "Current password is incorrect" });
-    }
+  const matchPassword = await bcrypt.compare(password, existingUser.password);
 
-    const newPassword = newPass
-      ? bcrypt.hashSync(newPass, 10)
-      : existingUser.password;
+  if (!matchPassword) {
+    res.status(404).json({ error: true, msg: "Current password wrong" });
+  } else {
+    let newPassword;
+
+    if (newPass) {
+      newPassword = bcrypt.hashSync(newPass, 10);
+    } else {
+      newPassword = existingUser.passwordHash;
+    }
 
     const user = await User.findByIdAndUpdate(
       req.params.id,
-      { name, phone, email, password: newPassword, images },
+      {
+        name: name,
+        phone: phone,
+        email: email,
+        password: newPassword,
+        images: images,
+      },
       { new: true }
     );
 
-    if (!user) {
+    if (!user)
       return res
         .status(400)
-        .json({ error: true, msg: "User cannot be updated!" });
-    }
+        .json({ error: true, msg: "The user cannot be Updated!" });
 
-    return res.status(200).json(user);
-  } catch (error) {
-    return res.status(500).json({ error: true, msg: "Something went wrong" });
+    res.send(user);
   }
 };
 
@@ -226,6 +253,201 @@ const deleteImage = async (req, res) => {
   }
 };
 
+const signInWithGoogle = async (req, res) => {
+  const { name, phone, email, password, images, isAdmin } = req.body;
+  const existingUser = await User.findOne({ email: email });
+
+  try {
+    if (!existingUser) {
+      const result = await User.create({
+        name: name,
+        phone: phone,
+        email: email,
+        password: password,
+        images: images,
+        isAdmin: isAdmin,
+      });
+
+      const token = jwt.sign(
+        { email: result.email, id: result._id },
+        process.env.TOKEN_SECRET_KEY
+      );
+
+      return res
+        .status(200)
+        .json({ user: result, token: token, msg: "User login successfully." });
+    } else {
+      const token = jwt.sign(
+        { email: existingUser.email, id: existingUser._id },
+        process.env.TOKEN_SECRET_KEY
+      );
+
+      return res.status(200).json({
+        user: existingUser,
+        token: token,
+        msg: "User login successfully.",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: true, msg: "Something went wrong" });
+  }
+};
+
+const resendOtp = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const verifyCode = await randomCode();
+
+    const existingUser = await User.findOne({ email: email });
+
+    if (existingUser) {
+      return res.status(200).json({
+        success: true,
+        message: "OTP Send",
+        otp: verifyCode,
+        existingUserId: existingUser._id,
+      });
+    }
+  } catch (error) {
+    return res.json({ status: "FAILED", msg: "Something went wrong" });
+  }
+};
+
+const verifyEmail = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    const isCodeValid = user.otp === otp;
+    const isNotExpired = user.otpExpired > Date.now();
+
+    if (isCodeValid && isNotExpired) {
+      user.isVerified = true;
+      user.otp = null;
+      user.otpExpired = null;
+      await user.save();
+      return res.status(200).json({
+        success: true,
+        message: "Email verified successfully.",
+      });
+    } else if (!isCodeValid) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid code.",
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "OTP expired code.",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error in verify mail",
+    });
+  }
+};
+
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Generate verify code
+    const verifyCode = await randomCode();
+
+    const existingUser = await User.findOne({ email: email });
+
+    if (!existingUser) {
+      return res.json({
+        status: "FAILED",
+        msg: "User not exists with this email!",
+      });
+    }
+
+    if (existingUser) {
+      existingUser.otp = verifyCode;
+      existingUser.otpExpired = Date.now() + 600000; // 10 minutes
+      await existingUser.save();
+    }
+
+    await sendOTPEmail(email, verifyCode);
+
+    return res.status(200).json({
+      success: true,
+      status: "SUCCESS",
+      msg: "OTP send",
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ status: "FAILED", msg: "Something went wrong" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+  try {
+    const existingUser = await User.findOne({ email: email });
+    if (!existingUser) {
+      return res.json({
+        status: "FAILED",
+        msg: "User not exists with this email!",
+      });
+    }
+
+    if (existingUser) {
+      const hashPassword = await bcrypt.hash(newPassword, 10);
+      existingUser.password = hashPassword;
+      await existingUser.save();
+    }
+
+    return res.status(200).json({
+      success: true,
+      status: "SUCCESS",
+      msg: "Change password successfully",
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ status: "FAILED", msg: "Something went wrong" });
+  }
+};
+const updateUser = async (req, res) => {
+  const { name, phone, email } = req.body;
+
+  const userExist = await User.findById(req.params.id);
+
+  if (req.body.password) {
+    newPassword = bcrypt.hashSync(req.body.password, 10);
+  } else {
+    newPassword = userExist.passwordHash;
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: name,
+      phone: phone,
+      email: email,
+      password: newPassword,
+      images: imagesArr,
+    },
+    { new: true }
+  );
+
+  if (!user) return res.status(400).send("The user cannot be Updated!");
+
+  res.send(user);
+};
 module.exports = {
   uploadImages,
   signUp,
@@ -236,4 +458,10 @@ module.exports = {
   deleteUser,
   getUserCount,
   deleteImage,
+  signInWithGoogle,
+  resendOtp,
+  verifyEmail,
+  forgotPassword,
+  resetPassword,
+  updateUser,
 };

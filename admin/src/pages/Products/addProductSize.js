@@ -14,7 +14,6 @@ import {
   fetchDataFromApi,
   postData,
 } from "../../utils/api";
-import { useNavigate } from "react-router-dom";
 import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
@@ -47,7 +46,6 @@ const AddProductSize = () => {
     size: "",
   });
 
-  const history = useNavigate();
   const input = useRef();
   const context = useContext(MyContext);
 

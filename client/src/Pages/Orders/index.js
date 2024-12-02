@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import { fetchDataFromApi } from "../../utils/api";
 import Dialog from "@mui/material/Dialog";
@@ -124,7 +125,7 @@ const Orders = () => {
         <Button className="close_" onClick={() => setIsOpenModal(false)}>
           <MdClose />
         </Button>
-        <h4 class="mb-1 font-weight-bold pr-5 mb-4">Products</h4>
+        <h4 className="mb-1 font-weight-bold pr-5 mb-4">Products</h4>
 
         <div className="table-responsive orderTable">
           <table className="table table-striped table-bordered">

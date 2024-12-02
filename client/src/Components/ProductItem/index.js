@@ -89,7 +89,7 @@ const ProductItem = (props) => {
           context.setAlertBox({
             open: true,
             error: false,
-            msg: "the product added in my list",
+            msg: "The product added in my list",
           });
 
           fetchDataFromApi(
@@ -147,7 +147,7 @@ const ProductItem = (props) => {
                   {props.item?.images?.map((image, index) => {
                     return (
                       <div className="slick-slide" key={index}>
-                        <img src={image} className="w-100" />
+                        <img src={image} className="w-100" alt={image} />
                       </div>
                     );
                   })}
@@ -160,7 +160,11 @@ const ProductItem = (props) => {
                 <IoIosImages />
               </Skeleton>
             ) : (
-              <img src={props.item?.images[0]} className="w-100" />
+              <img
+                src={props.item?.images[0]}
+                className="w-100"
+                alt={props.item?.images[0]}
+              />
             )}
           </Link>
 
@@ -231,8 +235,6 @@ const ProductItem = (props) => {
           </div>
         </div>
       </div>
-
-      {/*<ProductModal/> */}
     </>
   );
 };

@@ -17,7 +17,6 @@ export const fetchDataFromApi = async (url) => {
     );
     return data;
   } catch (error) {
-    console.log(error);
     return error;
   }
 };
@@ -31,26 +30,22 @@ export const uploadImage = async (url, formData) => {
 };
 
 export const postData = async (url, formData) => {
-  try {
-    const response = await fetch(process.env.REACT_APP_BASE_URL + url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`, // Include your API key in the Authorization header
-        "Content-Type": "application/json", // Adjust the content type as needed
-      },
+  const response = await fetch(process.env.REACT_APP_BASE_URL + url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`, // Include your API key in the Authorization header
+      "Content-Type": "application/json", // Adjust the content type as needed
+    },
 
-      body: JSON.stringify(formData),
-    });
+    body: JSON.stringify(formData),
+  });
 
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    } else {
-      const errorData = await response.json();
-      return errorData;
-    }
-  } catch (error) {
-    console.error("Error:", error);
+  if (response.ok) {
+    const data = await response.json();
+    return data;
+  } else {
+    const errorData = await response.json();
+    return errorData;
   }
 };
 

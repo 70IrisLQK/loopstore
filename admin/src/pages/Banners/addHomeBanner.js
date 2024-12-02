@@ -72,7 +72,9 @@ const AddBanner = () => {
 
   useEffect(() => {
     fetchDataFromApi("/api/imageUpload").then((res) => {
+      // eslint-disable-next-line array-callback-return
       res?.map((item) => {
+        // eslint-disable-next-line array-callback-return
         item?.images?.map((img) => {
           deleteImages(`/api/homeBanner/deleteImage?img=${img}`).then((res) => {
             deleteData("/api/imageUpload/deleteAllImages");
@@ -86,8 +88,10 @@ const AddBanner = () => {
     const subCatArr = [];
 
     context.catData?.categoryList?.length !== 0 &&
-      context.catData?.categoryList?.map((cat, index) => {
+      // eslint-disable-next-line array-callback-return
+      context.catData?.categoryList?.map((cat) => {
         if (cat?.children.length !== 0) {
+          // eslint-disable-next-line array-callback-return
           cat?.children?.map((subCat) => {
             subCatArr.push(subCat);
           });
@@ -132,7 +136,11 @@ const AddBanner = () => {
 
       formFields.images = selectedImages;
     } catch (error) {
-      console.log(error);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Something went wrong.",
+      });
     }
 
     uploadImage(apiEndPoint, formdata).then((res) => {
@@ -144,8 +152,10 @@ const AddBanner = () => {
           response.length !== 0
         ) {
           response.length !== 0 &&
+            // eslint-disable-next-line array-callback-return
             response.map((item) => {
               item?.images.length !== 0 &&
+                // eslint-disable-next-line array-callback-return
                 item?.images?.map((img) => {
                   img_arr.push(img);
                 });
@@ -154,8 +164,6 @@ const AddBanner = () => {
           uniqueArray = img_arr.filter(
             (item, index) => img_arr.indexOf(item) === index
           );
-
-          const appendedArray = [...previews, ...uniqueArray];
 
           setPreviews(uniqueArray);
           setTimeout(() => {

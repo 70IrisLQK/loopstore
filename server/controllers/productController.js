@@ -376,7 +376,6 @@ const createProduct = async (req, res) => {
   const images_Arr = uploadedImages?.map((item) => {
     item.images?.map((image) => {
       images_Array.push(image);
-      console.log(image);
     });
   });
 

@@ -1,36 +1,32 @@
 import React, { useContext, useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormLabel from "@mui/material/FormLabel";
+import { IoBagCheckOutline } from "react-icons/io5";
 
 import { MyContext } from "../../App";
 import { fetchDataFromApi, postData, deleteData } from "../../utils/api";
 
 import { useNavigate } from "react-router-dom";
 
-import axios from "axios";
-
-import { FormControlLabel, FormLabel, Radio, RadioGroup } from "@mui/material";
-import { IoBagCheckOutline } from "react-icons/io5";
-
 const Checkout = () => {
   const [formFields, setFormFields] = useState({
     fullName: "",
-    country: "VietNam",
+    country: "VietNamese",
     streetAddressLine1: "",
     streetAddressLine2: "",
     city: "",
-    state: "",
     zipCode: "",
     phoneNumber: "",
     email: "",
   });
 
   const [cartData, setCartData] = useState([]);
-  const [totalAmount, setTotalAmount] = useState();
+  const [totalAmount, setTotalAmount] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("online");
-
-  // const context = useContext(MyContext);
-  // const history = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -57,148 +53,127 @@ const Checkout = () => {
   const context = useContext(MyContext);
   const history = useNavigate();
 
-  const handlePaymentCOD = async () => {
-    if (!validateForm()) {
-      return;
-    }
+  const handlePaymentSuccess = (paymentId) => {
+    const user = JSON.parse(localStorage.getItem("user"));
 
     const addressInfo = {
       name: formFields.fullName,
       phoneNumber: formFields.phoneNumber,
-      address: `${formFields.streetAddressLine1}, ${formFields.streetAddressLine2}, ${formFields.district}, ${formFields.city}`,
+      address: formFields.streetAddressLine1 + formFields.streetAddressLine2,
       pincode: formFields.zipCode,
       date: new Date().toLocaleString("en-US", {
-        timeZone: "Asia/Ho_Chi_Minh",
         month: "short",
         day: "2-digit",
         year: "numeric",
       }),
     };
 
-    // Handle COD payment
-    const paymentId = "COD" + Date.now();
-    const user = JSON.parse(localStorage.getItem("user"));
-
     const payLoad = {
       name: addressInfo.name,
       phoneNumber: formFields.phoneNumber,
       address: addressInfo.address,
       pincode: addressInfo.pincode,
-      amount: totalAmount,
+      amount: parseInt(totalAmount),
       paymentId: paymentId,
       email: user.email,
       userid: user.userId,
       products: cartData,
-      paymentStatus: "pending",
-      paymentMethod: "cod",
+      date: addressInfo?.date,
+      paymentMethod: paymentMethod,
     };
 
-    try {
-      await postData(`/api/orders/create`, payLoad).then((res) => {
-        fetchDataFromApi(`/api/cart?userId=${user?.userId}`).then((res) => {
-          res?.length !== 0 &&
-            res?.map((item) => {
-              deleteData(`/api/cart/${item?.id}`).then(() => {});
-            });
-          setTimeout(() => {
-            context.getCartData();
-          }, 1000);
-          history("/orders");
-        });
+    postData(`/api/orders/create`, payLoad).then((res) => {
+      fetchDataFromApi(`/api/cart?userId=${user?.userId}`).then((res) => {
+        res?.length !== 0 &&
+          res?.map((item) => {
+            deleteData(`/api/cart/${item?.id}`).then(() => {});
+          });
+        setTimeout(() => {
+          context.getCartData();
+        }, 1000);
+        history("/orders");
       });
-    } catch (error) {
+    });
+  };
+
+  const checkout = (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    if (paymentMethod === "online") {
       context.setAlertBox({
         open: true,
         error: true,
-        msg: "An error occurred while creating an order",
+        msg: "Online payment is not available due to Stripe account being inactive. Please use Cash on Delivery.",
       });
+      return;
+    }
+
+    if (paymentMethod === "cod") {
+      handlePaymentSuccess("COD");
     }
   };
 
   const validateForm = () => {
-    if (formFields.fullName === "") {
+    if (!formFields.fullName) {
       context.setAlertBox({
         open: true,
         error: true,
-        msg: "Please fill full name ",
+        msg: "Please fill full name",
       });
       return false;
     }
-
-    if (formFields.streetAddressLine1 === "") {
+    if (!formFields.country) {
       context.setAlertBox({
         open: true,
         error: true,
-        msg: "Please fill Street address",
+        msg: "Please fill country",
       });
       return false;
     }
-
-    if (formFields.city === "") {
+    if (!formFields.streetAddressLine1) {
       context.setAlertBox({
         open: true,
         error: true,
-        msg: "Please fill city ",
+        msg: "Please fill street address",
       });
       return false;
     }
-
-    if (formFields.district === "") {
+    if (!formFields.city) {
       context.setAlertBox({
         open: true,
         error: true,
-        msg: "Please fill district",
+        msg: "Please fill city",
       });
       return false;
     }
-
-    if (formFields.zipCode === "") {
+    if (!formFields.zipCode) {
       context.setAlertBox({
         open: true,
         error: true,
-        msg: "Please fill zipCode ",
+        msg: "Please fill zip code",
       });
       return false;
     }
-
-    const regex = /^\d+$/;
-    if (!regex.test(formFields.zipCode)) {
+    const zipCodeRegex = /^[0-9]{4,10}$/; // Allow 4 to 10 digits for flexibility
+    if (!zipCodeRegex.test(formFields.zipCode)) {
       context.setAlertBox({
         open: true,
         error: true,
-        msg: "Please only enter digit",
+        msg: "Please provide a valid zip code",
       });
       return false;
     }
-
-    if (formFields.phoneNumber === "") {
+    if (!formFields.phoneNumber) {
       context.setAlertBox({
         open: true,
         error: true,
-        msg: "Please fill phone Number ",
+        msg: "Please fill phone number",
       });
       return false;
     }
-
-    if (!regex.test(formFields.phoneNumber)) {
-      context.setAlertBox({
-        open: true,
-        error: true,
-        msg: "Please only enter digit",
-      });
-      return false;
-    }
-
-    if (formFields.phoneNumber.length !== 10) {
-      context.setAlertBox({
-        open: true,
-        error: true,
-        msg: "Length of phone number must equal 10",
-      });
-      return false;
-    }
-
-    if (formFields.email === "") {
+    if (!formFields.email) {
       context.setAlertBox({
         open: true,
         error: true,
@@ -206,33 +181,28 @@ const Checkout = () => {
       });
       return false;
     }
-
-    const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!regexEmail.test(formFields.email)) {
+    // Email Format Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formFields.email)) {
       context.setAlertBox({
         open: true,
         error: true,
-        msg: "Please enter the correct email format (including @) !",
+        msg: "Please provide a valid email address",
       });
       return false;
     }
-  };
 
-  const checkout = (e) => {
-    e.preventDefault();
-
-    if (paymentMethod === "online") {
+    // Phone Number Validation
+    const phoneRegex = /^[0-9]{10,15}$/; // Customize based on expected format
+    if (!phoneRegex.test(formFields.phoneNumber)) {
       context.setAlertBox({
         open: true,
         error: true,
-        msg: "Online payment is not available due to Razorpay account being inactive. Please use Cash on Delivery.",
+        msg: "Please provide a valid phone number",
       });
-      return;
+      return false;
     }
-
-    if (paymentMethod === "cod") {
-      handlePaymentCOD();
-    }
+    return true;
   };
 
   return (
@@ -269,17 +239,6 @@ const Checkout = () => {
                       className="w-100"
                       size="small"
                       name="streetAddressLine1"
-                      onChange={onChangeInput}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <TextField
-                      label="Additional notes..."
-                      variant="outlined"
-                      className="w-100"
-                      size="small"
-                      name="streetAddressLine2"
                       onChange={onChangeInput}
                     />
                   </div>
@@ -382,7 +341,7 @@ const Checkout = () => {
                       {cartData?.length !== 0 &&
                         cartData?.map((item, index) => {
                           return (
-                            <tr>
+                            <tr key={index}>
                               <td>
                                 {item?.productTitle?.substr(0, 20) + "..."}{" "}
                                 <b>× {item?.quantity}</b>

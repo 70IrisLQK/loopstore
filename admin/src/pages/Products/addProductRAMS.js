@@ -14,7 +14,6 @@ import {
   fetchDataFromApi,
   postData,
 } from "../../utils/api";
-import { useNavigate } from "react-router-dom";
 import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
@@ -42,12 +41,11 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 const AddProductRAMS = () => {
   const [editId, setEditId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [productRamData, setproductRamData] = useState([]);
+  const [productRamData, setProductRamData] = useState([]);
   const [formFields, setFormFields] = useState({
     productRam: "",
   });
 
-  const history = useNavigate();
   const input = useRef();
   const context = useContext(MyContext);
 
@@ -60,11 +58,11 @@ const AddProductRAMS = () => {
 
   useEffect(() => {
     fetchDataFromApi("/api/productRAMS").then((res) => {
-      setproductRamData(res);
+      setProductRamData(res);
     });
   }, []);
 
-  const addproductRam = (e) => {
+  const addProductRam = (e) => {
     e.preventDefault();
     const formdata = new FormData();
     formdata.append("productRam", formFields.productRam);
@@ -88,13 +86,13 @@ const AddProductRAMS = () => {
         });
 
         fetchDataFromApi("/api/productRAMS").then((res) => {
-          setproductRamData(res);
+          setProductRamData(res);
         });
       });
     } else {
       editData(`/api/productRAMS/${editId}`, formFields).then((res) => {
         fetchDataFromApi("/api/productRAMS").then((res) => {
-          setproductRamData(res);
+          setProductRamData(res);
           setEditId("");
           setIsLoading(false);
           setFormFields({
@@ -108,7 +106,7 @@ const AddProductRAMS = () => {
   const deleteItem = (id) => {
     deleteData(`/api/productRAMS/${id}`).then((res) => {
       fetchDataFromApi("/api/productRAMS").then((res) => {
-        setproductRamData(res);
+        setProductRamData(res);
       });
     });
   };
@@ -149,7 +147,7 @@ const AddProductRAMS = () => {
         </Breadcrumbs>
       </div>
 
-      <form className="form" onSubmit={addproductRam}>
+      <form className="form" onSubmit={addProductRam}>
         <div className="row">
           <div className="col-sm-9">
             <div className="card p-4 mt-0">

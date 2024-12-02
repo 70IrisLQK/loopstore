@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Sidebar from "../../Components/Sidebar";
 import Button from "@mui/material/Button";
 import { IoIosMenu } from "react-icons/io";
@@ -18,7 +19,7 @@ const SearchPage = () => {
   const [productData, setProductData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const openDropdown = Boolean(anchorEl);
-  const [isOpenFilter, setIsOpenFilter] = useState(false);
+  const [isOpenFilter] = useState(false);
 
   const context = useContext(MyContext);
 
@@ -68,10 +69,6 @@ const SearchPage = () => {
       setProductData(res.products);
       setIsLoading(false);
     });
-  };
-
-  const openFilters = () => {
-    setIsOpenFilter(!isOpenFilter);
   };
 
   return (

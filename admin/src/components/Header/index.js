@@ -6,23 +6,18 @@ import { MdMenuOpen } from "react-icons/md";
 import { MdOutlineMenu } from "react-icons/md";
 import { MdOutlineLightMode } from "react-icons/md";
 import { MdNightlightRound } from "react-icons/md";
-import { FaRegBell } from "react-icons/fa6";
-import { IoMenu } from "react-icons/io5";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Logout from "@mui/icons-material/Logout";
 import { IoShieldHalfSharp } from "react-icons/io5";
-import Divider from "@mui/material/Divider";
 import { MyContext } from "../../App";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [isOpenNotificationDrop, setIsOpenNotificationDrop] = useState(false);
   const openMyAcc = Boolean(anchorEl);
-  const openNotifications = Boolean(isOpenNotificationDrop);
 
   const context = useContext(MyContext);
 

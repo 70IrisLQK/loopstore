@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import { emphasize, styled } from "@mui/material/styles";
@@ -10,9 +11,9 @@ import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import CircularProgress from "@mui/material/CircularProgress";
-import { editData, fetchDataFromApi, postData } from "../../utils/api";
+import { editData, fetchDataFromApi } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -36,7 +37,7 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 });
 
 const EditSubCat = () => {
-  const [data, setData] = useState([]);
+  const [, setData] = useState([]);
   const [categoryVal, setCategoryVal] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [formFields, setFormFields] = useState({

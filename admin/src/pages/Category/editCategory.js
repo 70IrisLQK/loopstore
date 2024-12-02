@@ -12,7 +12,6 @@ import {
   deleteImages,
   editData,
   fetchDataFromApi,
-  postData,
   uploadImage,
 } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
@@ -58,7 +57,7 @@ const EditCategory = () => {
 
   const [previews, setPreviews] = useState([]);
 
-  const [category, setcategory] = useState([]);
+  const [, setCategory] = useState([]);
 
   let { id } = useParams();
 
@@ -71,7 +70,9 @@ const EditCategory = () => {
   useEffect(() => {
     context.setProgress(20);
     fetchDataFromApi("/api/imageUpload").then((res) => {
+      // eslint-disable-next-line array-callback-return
       res?.map((item) => {
+        // eslint-disable-next-line array-callback-return
         item?.images?.map((img) => {
           deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
             deleteData("/api/imageUpload/deleteAllImages");
@@ -81,7 +82,7 @@ const EditCategory = () => {
     });
 
     fetchDataFromApi(`/api/category/${id}`).then((res) => {
-      setcategory(res?.categoryData[0]);
+      setCategory(res?.categoryData[0]);
       setPreviews(res?.categoryData[0]?.images);
       setFormFields({
         name: res?.categoryData[0]?.name,
@@ -89,6 +90,7 @@ const EditCategory = () => {
       });
       context.setProgress(100);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const changeInput = (e) => {
@@ -129,7 +131,11 @@ const EditCategory = () => {
         }
       }
     } catch (error) {
-      console.log(error);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Something went wrong",
+      });
     }
 
     uploadImage(apiEndPoint, formdata).then((res) => {
@@ -141,8 +147,10 @@ const EditCategory = () => {
           response.length !== 0
         ) {
           response.length !== 0 &&
+            // eslint-disable-next-line array-callback-return
             response.map((item) => {
               item?.images.length !== 0 &&
+                // eslint-disable-next-line array-callback-return
                 item?.images?.map((img) => {
                   img_arr.push(img);
                 });
@@ -273,7 +281,7 @@ const EditCategory = () => {
                 </div>
 
                 <div className="imagesUploadSec">
-                  <h5 class="mb-4">Media And Published</h5>
+                  <h5 className="mb-4">Media And Published</h5>
 
                   <div className="imgUploadBox d-flex align-items-center">
                     {previews?.length !== 0 &&

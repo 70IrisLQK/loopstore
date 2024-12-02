@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import Logo from "../../assets/images/logo.png";
 import { MyContext } from "../../App";
@@ -97,7 +98,11 @@ const SignIn = () => {
           setIsLoading(false);
         }
       } catch (error) {
-        console.log(error);
+        context.setAlertBox({
+          open: true,
+          error: true,
+          msg: "Something went wrong",
+        });
         setIsLoading(false);
       }
     });
@@ -106,11 +111,8 @@ const SignIn = () => {
   const signInWithGoogle = () => {
     signInWithPopup(auth, googleProvider)
       .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
         // The signed-in user info.
         const user = result.user;
-
         const fields = {
           name: user.providerData[0].displayName,
           email: user.providerData[0].email,
@@ -129,8 +131,8 @@ const SignIn = () => {
                 email: res.user?.email,
                 userId: res.user?.id,
               };
-
               localStorage.setItem("user", JSON.stringify(user));
+              context.setUser(JSON.stringify(user));
 
               context.setAlertBox({
                 open: true,
@@ -143,7 +145,7 @@ const SignIn = () => {
                 context.setIsLogin(true);
                 setIsLoading(false);
                 context.setIsHeaderFooterShow(true);
-                //window.location.href = "/";
+                // window.location.href = "/";
               }, 2000);
             } else {
               context.setAlertBox({
@@ -154,7 +156,11 @@ const SignIn = () => {
               setIsLoading(false);
             }
           } catch (error) {
-            console.log(error);
+            context.setAlertBox({
+              open: true,
+              error: true,
+              msg: "Something went wrong",
+            });
             setIsLoading(false);
           }
         });
@@ -165,16 +171,13 @@ const SignIn = () => {
           msg: "User authentication successfully!",
         });
 
-        // window.location.href = "/";
+        history("/");
       })
       .catch((error) => {
         // Handle Errors here.
-        const errorCode = error.code;
         const errorMessage = error.message;
         // The email of the user's account used.
-        const email = error.customData.email;
         // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
         context.setAlertBox({
           open: true,
           error: true,
@@ -184,30 +187,38 @@ const SignIn = () => {
       });
   };
 
+  const forgotPassword = () => {
+    const email = formfields.email;
+    if (email === "") {
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Please enter your email",
+      });
+    } else {
+      localStorage.setItem("userEmail", email);
+      postData("/api/user/forgotPassword", { email: email }).then((res) => {
+        if (res.status === "SUCCESS") {
+          localStorage.setItem("actionType", "changePassword");
+
+          history("/verifyOTP");
+        } else {
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: res.msg,
+          });
+        }
+      });
+    }
+  };
+
   return (
     <section className="section signInPage">
-      {/* <div className="shape-bottom">
-        {" "}
-        <svg
-          fill="#fff"
-          id="Layer_1"
-          x="0px"
-          y="0px"
-          viewBox="0 0 1921 819.8"
-          style={{ enableBackground: "new 0 0 1921 819.8" }}
-        >
-          {" "}
-          <path
-            class="st0"
-            d="M1921,413.1v406.7H0V0.5h0.4l228.1,598.3c30,74.4,80.8,130.6,152.5,168.6c107.6,57,212.1,40.7,245.7,34.4 c22.4-4.2,54.9-13.1,97.5-26.6L1921,400.5V413.1z"
-          ></path>{" "}
-        </svg>
-      </div> */}
-
       <div className="container">
         <div className="box card p-3 shadow border-0">
           <div className="text-center">
-            <img className="w-50" src={Logo} />
+            <img className="w-50" src={Logo} alt="logo" />
           </div>
 
           <form className="mt-3" onSubmit={login}>
@@ -239,6 +250,10 @@ const SignIn = () => {
               />
               {/* Password credential */}
             </div>
+
+            <a className="border-effect cursor txt" onClick={forgotPassword}>
+              Forgot Password
+            </a>
 
             <div className="d-flex align-items-center mt-3 mb-3 ">
               <Button type="submit" className="btn-blue col btn-lg btn-big">
@@ -272,7 +287,7 @@ const SignIn = () => {
               variant="outlined"
               onClick={signInWithGoogle}
             >
-              <img src={GoogleImg} /> Sign In with Google
+              <img src={GoogleImg} alt="google-img" /> Sign In with Google
             </Button>
           </form>
         </div>

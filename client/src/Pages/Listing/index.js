@@ -2,31 +2,23 @@ import Sidebar from "../../Components/Sidebar";
 import Button from "@mui/material/Button";
 import { IoIosMenu } from "react-icons/io";
 import { CgMenuGridR } from "react-icons/cg";
-import { HiViewGrid } from "react-icons/hi";
 import { TfiLayoutGrid4Alt } from "react-icons/tfi";
-import { FaAngleDown } from "react-icons/fa6";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import { useContext, useEffect, useState } from "react";
 import ProductItem from "../../Components/ProductItem";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchDataFromApi } from "../../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
-import { FaFilter } from "react-icons/fa";
 
 import { MyContext } from "../../App";
 
 const Listing = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
   const [productView, setProductView] = useState("four");
   const [productData, setProductData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [filterId, setFilterId] = useState("");
+  const [, setFilterId] = useState("");
 
   const history = useNavigate();
-
-  const openDropdown = Boolean(anchorEl);
 
   const context = useContext(MyContext);
 

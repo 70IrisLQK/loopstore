@@ -1,6 +1,6 @@
 import { LuShirt } from "react-icons/lu";
 import { TbTruckDelivery } from "react-icons/tb";
-import { TbDiscount2 } from "react-icons/tb";
+import { CiDiscount1 } from "react-icons/ci";
 import { CiBadgeDollar } from "react-icons/ci";
 import { Link } from "react-router-dom";
 import { FaLinkedin } from "react-icons/fa";
@@ -28,12 +28,6 @@ const Footer = () => {
                 Join our email subscription now to get updates on
                 <br /> promotions and coupons.
               </p>
-
-              {/* <form className="mt-4">
-                <IoMailOutline />
-                <input type="text" placeholder="Your Email Address" />
-                <Button>Subscribe</Button>
-              </form> */}
             </div>
 
             <div className="col-md-6">
@@ -61,7 +55,7 @@ const Footer = () => {
 
             <div className="col d-flex align-items-center">
               <span>
-                <TbDiscount2 />
+                <CiDiscount1 />
               </span>
               <span className="ml-2">Daily Mega Discounts</span>
             </div>
@@ -86,7 +80,7 @@ const Footer = () => {
                       {item?.children?.length !== 0 &&
                         item?.children?.map((subCat, key) => {
                           return (
-                            <li>
+                            <li key={key}>
                               <Link
                                 to={`/products/subCat/${subCat?._id}`}
                                 key={key}

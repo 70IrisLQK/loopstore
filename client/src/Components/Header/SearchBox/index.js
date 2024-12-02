@@ -23,7 +23,7 @@ const SearchBox = (props) => {
     if (query !== "") {
       setIsLoading(true);
       fetchDataFromApi(`/api/search?q=${query}`).then((res) => {
-        setSuggestions(res.slice(0, 5)); // Limit to 5 suggestions
+        setSuggestions(res?.slice(0, 5)); // Limit to 5 suggestions
         setIsLoading(false);
       });
     } else {

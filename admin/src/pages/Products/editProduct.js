@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable array-callback-return */
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -116,7 +118,7 @@ const EditUpload = () => {
     const subCatArr = [];
 
     context.catData?.categoryList?.length !== 0 &&
-      context.catData?.categoryList?.map((cat, index) => {
+      context.catData?.categoryList?.map((cat) => {
         if (cat?.children.length !== 0) {
           cat?.children?.map((subCat) => {
             subCatArr.push(subCat);
@@ -292,7 +294,11 @@ const EditUpload = () => {
         }
       }
     } catch (error) {
-      console.log(error);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Something went wrong",
+      });
     }
 
     uploadImage(apiEndPoint, formdata).then((res) => {
@@ -778,7 +784,7 @@ const EditUpload = () => {
 
           <div className="card p-4 mt-0">
             <div className="imagesUploadSec">
-              <h5 class="mb-4">Media And Published</h5>
+              <h5 className="mb-4">Media And Published</h5>
 
               <div className="imgUploadBox d-flex align-items-center">
                 {previews?.length !== 0 &&

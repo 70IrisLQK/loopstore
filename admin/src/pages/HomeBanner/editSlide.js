@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable array-callback-return */
 import React from "react";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import HomeIcon from "@mui/icons-material/Home";
@@ -49,7 +51,7 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 const EditHomeSlide = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [formFields, setFormFields] = useState({
+  const [formFields] = useState({
     images: [],
   });
 
@@ -76,7 +78,7 @@ const EditHomeSlide = () => {
     });
 
     fetchDataFromApi(`/api/homeBanner/${id}`).then((res) => {
-      // setcategory(res);
+      // setCategory(res);
       setPreviews(res.images);
       context.setProgress(100);
     });
@@ -113,7 +115,11 @@ const EditHomeSlide = () => {
         }
       }
     } catch (error) {
-      console.log(error);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Something went wrong",
+      });
     }
 
     uploadImage(apiEndPoint, formdata).then((res) => {
@@ -231,7 +237,7 @@ const EditHomeSlide = () => {
             <div className="col-sm-9">
               <div className="card p-4 mt-0">
                 <div className="imagesUploadSec">
-                  <h5 class="mb-4">Media And Published</h5>
+                  <h5 className="mb-4">Media And Published</h5>
 
                   <div className="imgUploadBox d-flex align-items-center">
                     {previews?.length !== 0 &&
