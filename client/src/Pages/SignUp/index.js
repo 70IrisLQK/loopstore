@@ -177,17 +177,16 @@ const SignUp = () => {
           msg: "User authentication successfully!",
         });
 
-        window.location.href = "/";
+        // window.location.href = "/";
       })
       .catch((error) => {
         // Handle Errors here.
-        const errorMessage = error.message;
         // The email of the user's account used.
         // The AuthCredential type that was used.
         context.setAlertBox({
           open: true,
           error: true,
-          msg: errorMessage,
+          msg: "Internal Server Error",
         });
         // ...
       });

@@ -143,7 +143,6 @@ const Login = () => {
           phone: user.providerData[0].phoneNumber,
           isAdmin: true,
         };
-
         postData("/api/user/authWithGoogle", fields).then((res) => {
           try {
             if (res.error !== true) {
@@ -184,24 +183,22 @@ const Login = () => {
             setIsLoading(false);
           }
         });
-
         context.setAlertBox({
           open: true,
           error: false,
           msg: "User authentication successfully!",
         });
 
-        window.location.href = "/";
+        // window.location.href = "/";
       })
       .catch((error) => {
         // Handle Errors here.
-        const errorMessage = error.message;
         // The email of the user's account used.
         // The AuthCredential type that was used.
         context.setAlertBox({
           open: true,
           error: true,
-          msg: errorMessage,
+          msg: "Internal Server Error",
         });
         // ...
       });
@@ -229,7 +226,7 @@ const Login = () => {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="enter your email"
+                  placeholder="Enter your email"
                   onFocus={() => focusInput(0)}
                   onBlur={() => setInputIndex(null)}
                   autoFocus
@@ -249,7 +246,7 @@ const Login = () => {
                 <input
                   type={`${isShowPassword === true ? "text" : "password"}`}
                   className="form-control"
-                  placeholder="enter your password"
+                  placeholder="Enter your password"
                   onFocus={() => focusInput(1)}
                   onBlur={() => setInputIndex(null)}
                   name="password"

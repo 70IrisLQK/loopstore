@@ -8,8 +8,14 @@
       "type": "firefox",
       "request": "launch",
       "name": "Launch Chrome against localhost",
-      "url": "http://localhost:3001",
-      "webRoot": "${workspaceFolder}"
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}",
+      "pathMappings": [
+        {
+          "url": "file:///H:/sourcetree/loopstore_v1/admin/src/",
+          "path": "${workspaceFolder}/admin/src/pages/Login"
+        }
+      ]
     }
   ]
 }

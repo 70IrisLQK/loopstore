@@ -86,7 +86,7 @@ const AddSubCat = () => {
       context.setAlertBox({
         open: true,
         error: true,
-        msg: "Please enter sub category",
+        msg: "Please Enter sub category",
       });
       return false;
     }

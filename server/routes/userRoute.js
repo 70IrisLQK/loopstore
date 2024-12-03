@@ -17,6 +17,7 @@ const {
   forgotPassword,
   resetPassword,
   updateUser,
+  signInAdminWithGoogle,
 } = require("../controllers/userController");
 
 const storage = multer.diskStorage({

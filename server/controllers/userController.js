@@ -77,15 +77,26 @@ const signUp = async (req, res) => {
       await existingUser.save();
       user = existingUser;
     } else {
-      user = new User({
-        name,
-        email,
-        phone,
-        password: hashPassword,
-        isAdmin,
-        otp: verifyCode,
-        otpExpired: Date.now() + 600000, // 10 minutes
-      });
+      if (isAdmin === true) {
+        user = new User({
+          name,
+          email,
+          phone,
+          password: hashPassword,
+          isAdmin,
+          isVerified: true,
+        });
+      } else {
+        user = new User({
+          name,
+          email,
+          phone,
+          password: hashPassword,
+          isAdmin,
+          otp: verifyCode,
+          otpExpired: Date.now() + 600000, // 10 minutes
+        });
+      }
 
       await user.save();
     }
@@ -256,7 +267,6 @@ const deleteImage = async (req, res) => {
 const signInWithGoogle = async (req, res) => {
   const { name, phone, email, password, images, isAdmin } = req.body;
   const existingUser = await User.findOne({ email: email });
-
   try {
     if (!existingUser) {
       const result = await User.create({
@@ -266,6 +276,7 @@ const signInWithGoogle = async (req, res) => {
         password: password,
         images: images,
         isAdmin: isAdmin,
+        isVerified: true,
       });
 
       const token = jwt.sign(
@@ -277,6 +288,9 @@ const signInWithGoogle = async (req, res) => {
         .status(200)
         .json({ user: result, token: token, msg: "User login successfully." });
     } else {
+      if (!existingUser.isAdmin) {
+        return res.status(403).json({ error: true, msg: "User is not admin." });
+      }
       const token = jwt.sign(
         { email: existingUser.email, id: existingUser._id },
         process.env.TOKEN_SECRET_KEY

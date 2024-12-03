@@ -222,17 +222,16 @@ const SignUp = () => {
           msg: "User authentication successfully!",
         });
 
-        window.location.href = "/";
+        // window.location.href = "/";
       })
       .catch((error) => {
         // Handle Errors here.
-        const errorMessage = error.message;
         // The email of the user's account used.
         // The AuthCredential type that was used.
         context.setAlertBox({
           open: true,
           error: true,
-          msg: errorMessage,
+          msg: "Internal Server Error",
         });
         // ...
       });
@@ -245,11 +244,11 @@ const SignUp = () => {
         <div className="row">
           <div className="col-md-8 d-flex align-items-center flex-column part1 justify-content-center">
             <h1>
-              BEST UX/UI FASHION{" "}
-              <span className="text-sky">Online Shopping DASHBOARD</span> &
-              ADMIN PANEL
+              <span className="text-sky text-center">
+                Online Shopping DASHBOARD
+              </span>
             </h1>
-            <div className="w-100 mt-4">
+            <div className="w-100 mt-4 d-flex align-items-center flex-column part1 justify-content-center">
               <Link to={"/"}>
                 {" "}
                 <Button className="btn-blue btn-lg btn-big">
@@ -282,7 +281,7 @@ const SignUp = () => {
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="enter your name"
+                      placeholder="Enter your name"
                       onFocus={() => focusInput(0)}
                       onBlur={() => setInputIndex(null)}
                       autoFocus
@@ -302,7 +301,7 @@ const SignUp = () => {
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="enter your email"
+                      placeholder="Enter your email"
                       onFocus={() => focusInput(1)}
                       onBlur={() => setInputIndex(null)}
                       name="email"
@@ -321,7 +320,7 @@ const SignUp = () => {
                     <input
                       type="number"
                       className="form-control"
-                      placeholder="enter your Phone"
+                      placeholder="Enter your Phone"
                       onFocus={() => focusInput(2)}
                       onBlur={() => setInputIndex(null)}
                       name="phone"
@@ -340,7 +339,7 @@ const SignUp = () => {
                     <input
                       type={`${isShowPassword === true ? "text" : "password"}`}
                       className="form-control"
-                      placeholder="enter your password"
+                      placeholder="Enter your password"
                       onFocus={() => focusInput(3)}
                       onBlur={() => setInputIndex(null)}
                       name="password"
@@ -368,7 +367,7 @@ const SignUp = () => {
                         isShowConfirmPassword === true ? "text" : "password"
                       }`}
                       className="form-control"
-                      placeholder="confirm your password"
+                      placeholder="Confirm your password"
                       onFocus={() => focusInput(4)}
                       onBlur={() => setInputIndex(null)}
                       name="confirmPassword"

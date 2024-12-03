@@ -131,6 +131,8 @@ This project provides a full-stack eCommerce solution with a robust backend, adm
    REACT_APP_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
    REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
    REACT_APP_FIREBASE_APP_ID=your_firebase_app_id
+   REACT_APP_CLOUDINARY_CLOUD_NAME =your_cloudinary_cloud
+   REACT_APP_CLOUDINARY_URL = your_cloudinary_url
    ```
 4. Start the admin panel:
    ```bash
